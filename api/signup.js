@@ -151,6 +151,9 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error("Signup error:", error);
-    return res.status(500).json({ error: "Something went wrong. Please try again." });
+    return res.status(500).json({
+      error: "Something went wrong. Please try again.",
+      debug: error.message,
+    });
   }
 };
