@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blue Mustang Studios — Independent Game Development</title>
   <meta name="description" content="Blue Mustang Studios is an independent game development studio building polished interactive experiences with a cinematic edge.">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
@@ -28,6 +28,114 @@
     <div class="hero-content">
     </div>
   </section>
+
+  <!-- Beta Signup -->
+  <div class="page-content">
+    <section class="signup-section tight">
+      <div class="container">
+        <div class="signup-card">
+          <div class="signup-icon">
+            <img src="deep-sea-idle-icon.png" alt="Deep Sea Idle game icon">
+          </div>
+
+          <div class="signup-badge">Android Beta</div>
+
+          <h2 class="signup-title">Deep Sea Idle</h2>
+
+          <p class="signup-desc">Sign up to become a beta tester. Enter your Gmail address below and we'll send you a link to download the game on your Android device.</p>
+
+          <form class="signup-form" id="signup-form">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="you@gmail.com"
+              required
+              autocomplete="email"
+            >
+            <div class="signup-error" id="error-msg"></div>
+            <button type="submit">Sign Up for Beta Access</button>
+          </form>
+
+          <div class="signup-success" id="success-tester">
+            You're in! Check your Gmail for an invite from Google Play. Make sure the icon above matches what you see in the invite.
+          </div>
+
+          <div class="signup-standby" id="success-standby">
+            You're on the standby list. We'll let you know if a spot opens up!
+          </div>
+
+          <p class="signup-note">We'll only use your email to send the beta testing link. Look for the icon above to confirm it's the right app.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('site-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 30);
+    });
+
+    // Form handling
+    const form = document.getElementById('signup-form');
+    const errorMsg = document.getElementById('error-msg');
+    const successTester = document.getElementById('success-tester');
+    const successStandby = document.getElementById('success-standby');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+
+      errorMsg.style.display = 'none';
+
+      if (!email.toLowerCase().endsWith('@gmail.com')) {
+        errorMsg.textContent = 'Please enter a Gmail address (example@gmail.com). Android beta testing requires a Google account.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // Loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing up...';
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorMsg.textContent = data.error || 'Something went wrong. Please try again.';
+          errorMsg.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign Up for Beta Access';
+          return;
+        }
+
+        form.style.display = 'none';
+
+        if (data.status === 'tester') {
+          successTester.style.display = 'block';
+        } else {
+          successStandby.querySelector
+            ? (successStandby.textContent = data.message)
+            : null;
+          successStandby.style.display = 'block';
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Network error. Please check your connection and try again.';
+        errorMsg.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign Up for Beta Access';
+      }
+    });
+  </script>
 
   <footer class="site-footer">
     <div class="container">
