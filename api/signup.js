@@ -158,13 +158,9 @@ module.exports = async function handler(req, res) {
           : `You're on the standby list (position #${position - MAX_TESTERS}). We'll let you know if a spot opens up.`,
     });
   } catch (error) {
-    const rawKey = process.env.FIREBASE_PRIVATE_KEY || "";
     console.error("Signup error:", error);
     return res.status(500).json({
       error: "Something went wrong. Please try again.",
-      debug: error.message,
-      keyStart: rawKey.substring(0, 30),
-      keyLength: rawKey.length,
     });
   }
 };
