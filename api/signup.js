@@ -3,6 +3,14 @@ const { google } = require("googleapis");
 
 const MAX_TESTERS = 20;
 
+function formatPrivateKey(key) {
+  // Remove surrounding quotes if present
+  key = key.replace(/^["']|["']$/g, "");
+  // Replace literal \n with actual newlines
+  key = key.replace(/\\n/g, "\n");
+  return key;
+}
+
 // Lazy-init Firebase (cached across warm invocations)
 let db;
 function getFirestore() {
@@ -12,7 +20,7 @@ function getFirestore() {
         credential: admin.credential.cert({
           projectId: process.env.FIREBASE_PROJECT_ID,
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+          privateKey: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY || ""),
         }),
       });
     }
@@ -26,7 +34,7 @@ async function getPlayClient() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.FIREBASE_CLIENT_EMAIL,
-      private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      private_key: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY || ""),
     },
     scopes: ["https://www.googleapis.com/auth/androidpublisher"],
   });
@@ -150,10 +158,13 @@ module.exports = async function handler(req, res) {
           : `You're on the standby list (position #${position - MAX_TESTERS}). We'll let you know if a spot opens up.`,
     });
   } catch (error) {
+    const rawKey = process.env.FIREBASE_PRIVATE_KEY || "";
     console.error("Signup error:", error);
     return res.status(500).json({
       error: "Something went wrong. Please try again.",
       debug: error.message,
+      keyStart: rawKey.substring(0, 30),
+      keyLength: rawKey.length,
     });
   }
 };
