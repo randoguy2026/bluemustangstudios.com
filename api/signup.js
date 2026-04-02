@@ -50,20 +50,23 @@ async function syncTestersToPlayConsole(testerEmails) {
   // Create an edit
   const { data: edit } = await play.edits.insert({ packageName });
 
-  // Set the full tester list
-  await play.edits.testers.patch({
+  // Set the full tester list — the API expects a flat array of email strings
+  const { data: patchResult } = await play.edits.testers.patch({
     packageName,
     editId: edit.id,
     track,
     requestBody: {
-      googleGroups: [],
-      googlePlusCommunities: [],
-      testers: testerEmails.map((email) => ({ email })),
+      googleGroups: testerEmails,
     },
   });
 
   // Commit the edit
-  await play.edits.commit({ packageName, editId: edit.id });
+  const { data: commitResult } = await play.edits.commit({
+    packageName,
+    editId: edit.id,
+  });
+
+  return { patchResult, commitResult };
 }
 
 module.exports = async function handler(req, res) {
@@ -141,9 +144,10 @@ module.exports = async function handler(req, res) {
           .where("status", "==", "tester")
           .get();
         const testerEmails = allTesters.docs.map((doc) => doc.data().email);
-        await syncTestersToPlayConsole(testerEmails);
+        const playResult = await syncTestersToPlayConsole(testerEmails);
+        console.log("Play sync result:", JSON.stringify(playResult));
       } catch (playError) {
-        console.error("Google Play API sync failed:", playError.message);
+        console.error("Google Play API sync failed:", playError.message, playError.stack);
         // Temporarily expose the error for debugging
         return res.status(200).json({
           status,
@@ -152,6 +156,7 @@ module.exports = async function handler(req, res) {
             ? "You're in! Check your Gmail for an invite from Google Play."
             : `You're on the standby list (position #${position - MAX_TESTERS}). We'll let you know if a spot opens up.`,
           playError: playError.message,
+          playErrorDetails: playError.response?.data || playError.errors || null,
         });
       }
     }
