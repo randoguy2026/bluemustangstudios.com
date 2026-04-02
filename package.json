@@ -2,7 +2,6 @@
   "name": "bluemustangstudios.com",
   "private": true,
   "dependencies": {
-    "firebase-admin": "^13.0.0",
-    "googleapis": "^144.0.0"
+    "firebase-admin": "^13.0.0"
   }
 }
