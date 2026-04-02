@@ -143,9 +143,16 @@ module.exports = async function handler(req, res) {
         const testerEmails = allTesters.docs.map((doc) => doc.data().email);
         await syncTestersToPlayConsole(testerEmails);
       } catch (playError) {
-        // Log but don't fail the signup — they're saved in Firestore
-        // You can manually sync later if the Play API call fails
         console.error("Google Play API sync failed:", playError.message);
+        // Temporarily expose the error for debugging
+        return res.status(200).json({
+          status,
+          position,
+          message: status === "tester"
+            ? "You're in! Check your Gmail for an invite from Google Play."
+            : `You're on the standby list (position #${position - MAX_TESTERS}). We'll let you know if a spot opens up.`,
+          playError: playError.message,
+        });
       }
     }
 
