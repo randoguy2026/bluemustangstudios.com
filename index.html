@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blue Mustang Studios — Independent Game Development</title>
-  <meta name="description" content="Blue Mustang Studios is an independent game development studio building polished interactive experiences with a cinematic edge.">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <title>Blue Mustang Studios | Web & app development</title>
+  <meta name="description" content="Blue Mustang Studios is an independent studio for web and app development. One developer, real software, built end-to-end. Client work and our own portfolio.">
+  <link rel="icon" type="image/png" href="Blue Mustang Logo no words.png">
+  <link rel="apple-touch-icon" href="Blue Mustang Logo no words.png">
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
 
   <!-- Navigation -->
   <nav class="site-nav" id="site-nav">
-    <a href="index.html" class="nav-logo">Blue Mustang Studios</a>
+    <a href="index.html" class="nav-logo">
+      <span>Blue Mustang Studios</span>
+    </a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="support.html">Support</a></li>
-      <li><a href="privacy.html">Privacy Policy</a></li>
-      <li><a href="terms.html">Terms of Use</a></li>
+      <!-- <li><a href="#client-work">Client Work</a></li> -->
+      <li><a href="#our-portfolio">Our Portfolio</a></li>
+      <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
@@ -27,123 +31,202 @@
     <div class="hero-fade"></div>
 
     <div class="hero-content">
+      <div class="hero-text">
+        <h1>One developer.<br>Real software.<br>Built end-to-end.</h1>
+        <p class="hero-tagline">Blue Mustang Studios is an independent studio for web and app development. Client work and our own portfolio.</p>
+        <div class="hero-buttons">
+          <a href="#contact" class="btn btn-primary">Start a project</a>
+        </div>
+      </div>
+      <img class="hero-logo" src="Blue Mustang Logo no words.png" alt="Blue Mustang Studios">
     </div>
   </section>
 
-  <!-- Beta Signup -->
   <div class="page-content">
-    <section class="signup-section tight">
+
+    <!-- Client Work HIDDEN until Haul-Well Cargo site is public (currently password-protected, pending client OK).
+         To restore: uncomment this section AND the "Client Work" nav links in the header on all pages.
+    <section id="client-work">
       <div class="container">
-        <div class="signup-card">
-          <div class="signup-icon">
-            <img src="deep-sea-idle-icon.png" alt="Deep Sea Idle game icon">
+        <p class="eyebrow">Client Work</p>
+
+        <div class="portfolio-grid">
+
+          <a class="game-card game-card--featured" href="https://haulwellcargo.com" target="_blank" rel="noopener">
+            <div class="game-card-image">
+              <img src="haul-well-cargo-thumb.jpg" alt="Haul-Well Cargo trailers">
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-meta">Website</div>
+              <h3>Haul-Well Cargo</h3>
+              <p>A family-owned cargo and race trailer business serving customers nationwide. Full site rebuild covering story, gallery, and the contact flow.</p>
+              <span class="game-status">Live</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+    -->
+    <!-- end Client Work -->
+
+    <!-- Our Portfolio -->
+    <section id="our-portfolio">
+      <div class="container">
+        <p class="eyebrow">Our Portfolio</p>
+
+        <div class="portfolio-grid">
+
+          <a class="game-card" href="https://mymoveprep.com" target="_blank" rel="noopener">
+            <div class="game-card-image">
+              <img src="my-move-prep-thumb.jpg" alt="My Move Prep PCS comparison tool">
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-meta">Website</div>
+              <h3>My Move Prep</h3>
+              <p>Built for service members to analyze PCS differences between duty stations.</p>
+              <span class="game-status">Live</span>
+            </div>
+          </a>
+
+          <a class="game-card" href="https://legnd.io" target="_blank" rel="noopener">
+            <div class="game-card-image">
+              <img src="legnd-thumb.jpg" alt="LEGND weekly operating system">
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-meta">Product</div>
+              <h3>LEGND</h3>
+              <p>A weekly operating system that replaces willpower with structured routines, so goals turn into consistent action.</p>
+              <span class="game-status">Live</span>
+            </div>
+          </a>
+
+          <div class="game-card" style="cursor: default;">
+            <div class="game-card-image game-card-image--brand-apps">
+              <span class="card-image-label">Apps</span>
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-meta">Apps</div>
+              <h3>Mobile &amp; desktop apps</h3>
+              <span class="game-status">Coming Soon</span>
+            </div>
           </div>
 
-          <div class="signup-badge">Android Beta</div>
+        </div>
+      </div>
+    </section>
 
-          <h2 class="signup-title">Deep Sea Idle</h2>
+    <!-- Contact -->
+    <section class="contact" id="contact">
+      <div class="container contact-container">
+        <p class="eyebrow">Contact</p>
+        <h2 class="section-title">Get in touch.</h2>
+        <p class="contact-lead">Whether you need a new website, an app built, or have a question about one of our products, drop a note and we&rsquo;ll get back to you within a couple days.</p>
 
-          <p class="signup-desc">Sign up to become a beta tester. Enter your Gmail address below and we'll send you a link to download the game on your Android device.</p>
+        <form id="contact-form" class="contact-form" novalidate>
+          <!-- Honeypot: hidden field; bots fill it, humans don't. -->
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
 
-          <form class="signup-form" id="signup-form">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="you@gmail.com"
-              required
-              autocomplete="email"
-            >
-            <div class="signup-error" id="error-msg"></div>
-            <button type="submit">Sign Up for Beta Access</button>
-          </form>
+          <label class="visually-hidden" for="cf-name">Your name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" required autocomplete="name">
 
-          <div class="signup-success" id="success-tester">
-            You're in! Check your Gmail for an invite from Google Play. Make sure the icon above matches what you see in the invite.
-          </div>
+          <label class="visually-hidden" for="cf-email">Your email</label>
+          <input type="email" id="cf-email" name="email" placeholder="Your email" required autocomplete="email">
 
-          <div class="signup-standby" id="success-standby">
-            You're on the standby list. We'll let you know if a spot opens up!
-          </div>
+          <label class="visually-hidden" for="cf-website">Your website (optional)</label>
+          <input type="text" id="cf-website" name="website" placeholder="Your website (optional)" autocomplete="url">
 
-          <p class="signup-note">We'll only use your email to send the beta testing link. Look for the icon above to confirm it's the right app.</p>
+          <label class="visually-hidden" for="cf-message">What can we help with?</label>
+          <textarea id="cf-message" name="message" placeholder="What can we help with?" rows="5" required></textarea>
+
+          <div class="contact-error" id="cf-error"></div>
+          <button type="submit" class="btn btn-primary contact-submit" id="cf-submit">Send</button>
+        </form>
+
+        <div class="contact-success" id="cf-success">
+          Thanks. We&rsquo;ll get back to you within a couple days.
         </div>
       </div>
     </section>
   </div>
 
   <script>
-    // Nav scroll effect
     const nav = document.getElementById('site-nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 30);
     });
 
-    // Form handling
-    const form = document.getElementById('signup-form');
-    const errorMsg = document.getElementById('error-msg');
-    const successTester = document.getElementById('success-tester');
-    const successStandby = document.getElementById('success-standby');
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const contactForm = document.getElementById('contact-form');
+    const contactError = document.getElementById('cf-error');
+    const contactSuccess = document.getElementById('cf-success');
+    const contactSubmit = document.getElementById('cf-submit');
 
-    form.addEventListener('submit', async function(e) {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
+      contactError.style.display = 'none';
 
-      errorMsg.style.display = 'none';
+      const data = Object.fromEntries(new FormData(contactForm));
+      if (data._honey) return;
 
-      if (!email.toLowerCase().endsWith('@gmail.com')) {
-        errorMsg.textContent = 'Please enter a Gmail address (example@gmail.com). Android beta testing requires a Google account.';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      // Loading state
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Signing up...';
+      contactSubmit.disabled = true;
+      contactSubmit.textContent = 'Sending...';
 
       try {
-        const res = await fetch('/api/signup', {
+        const res = await fetch('/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify(data),
         });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          errorMsg.textContent = data.error || 'Something went wrong. Please try again.';
-          errorMsg.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign Up for Beta Access';
-          return;
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.ok) {
+          throw new Error(json.error || 'Submission failed');
         }
-
-        form.style.display = 'none';
-
-        if (data.status === 'tester') {
-          successTester.style.display = 'block';
-        } else {
-          successStandby.querySelector
-            ? (successStandby.textContent = data.message)
-            : null;
-          successStandby.style.display = 'block';
-        }
+        contactForm.style.display = 'none';
+        contactSuccess.style.display = 'block';
       } catch (err) {
-        errorMsg.textContent = 'Network error. Please check your connection and try again.';
-        errorMsg.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Sign Up for Beta Access';
+        contactError.textContent = 'Could not send right now. Email info@bluemustangstudios.com directly.';
+        contactError.style.display = 'block';
+        contactSubmit.disabled = false;
+        contactSubmit.textContent = 'Send';
       }
     });
   </script>
 
   <footer class="site-footer">
     <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h4>Blue Mustang Studios</h4>
+          <p>An independent studio for web and app development.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="mailto:info@bluemustangstudios.com">Email</a></li>
+          </ul>
+        </div>
+      </div>
       <div class="footer-legal">
         &copy; 2026 Blue Mustang Studios. All rights reserved.
       </div>
     </div>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Blue Mustang Studios",
+      "url": "https://bluemustangstudios.com",
+      "logo": "https://bluemustangstudios.com/Blue%20Mustang%20Logo%20w%20words.png",
+      "image": "https://bluemustangstudios.com/Blue%20Mustang%20Logo%20w%20words.png",
+      "description": "Blue Mustang Studios is an independent studio for web and app development. Client work and our own portfolio, built end-to-end.",
+      "email": "info@bluemustangstudios.com",
+      "areaServed": {
+        "@type": "Country",
+        "name": "United States"
+      }
+    }
+    </script>
   </footer>
 
 </body>

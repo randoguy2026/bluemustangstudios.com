@@ -7,9 +7,10 @@
 
 /* --- CSS Variables --- */
 :root {
-  --bg: #05070B;
-  --surface: #0B1220;
-  --surface-2: #111827;
+  --bg: #080B12;
+  --band: #0D1422;
+  --surface: #131C2D;
+  --surface-2: #1A2335;
   --text: #F5F7FA;
   --text-secondary: #A7B0BE;
   --text-muted: #6B7280;
@@ -48,7 +49,7 @@ html {
 body {
   font-family: 'Inter', Arial, sans-serif;
   color: var(--text);
-  background: var(--bg);
+  background-color: var(--bg);
   line-height: 1.7;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
@@ -109,6 +110,9 @@ body {
 }
 
 .nav-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: 'Cinzel', Georgia, serif;
   font-size: 1.1rem;
   font-weight: 600;
@@ -116,6 +120,12 @@ body {
   color: var(--text);
   text-decoration: none;
   text-transform: uppercase;
+}
+
+.nav-logo img {
+  height: 36px;
+  width: auto;
+  display: block;
 }
 
 .nav-links {
@@ -171,12 +181,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('Blue Mustang Logo no words.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: #000;
   z-index: -3;
-  transition: opacity 0.1s linear;
 }
 
 .hero-overlay {
@@ -205,13 +211,32 @@ body {
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 720px;
-  padding: 140px 40px 100px;
+  width: 100%;
+  max-width: 1400px;
+  padding: 140px 64px 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.hero-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 600px;
+}
+
+.hero-logo {
+  display: block;
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 440px;
+  height: auto;
 }
 
 .hero-content h1 {
   font-family: 'Cinzel', Georgia, serif;
-  font-size: 64px;
+  font-size: 62px;
   font-weight: 600;
   line-height: 1.05;
   color: var(--text);
@@ -239,6 +264,15 @@ body {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+.hero-capabilities {
+  margin-top: var(--space-4);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 /* --- Buttons --- */
@@ -287,7 +321,16 @@ body {
 .page-content {
   position: relative;
   z-index: 1;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(47, 107, 255, 0.07), transparent 55%),
+    radial-gradient(ellipse 70% 60% at 95% 100%, rgba(200, 169, 107, 0.05), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Tonal rhythm: alternate section bands so the page isn't one flat tone. */
+#our-portfolio {
+  background: var(--band);
 }
 
 section {
@@ -379,9 +422,43 @@ section.tight {
 /* --- Portfolio / Games --- */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-3);
   margin-top: var(--space-5);
+}
+
+/* Featured card: a single flagship item shown wide (image left, copy right). */
+.game-card.game-card--featured {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: stretch;
+}
+
+.game-card--featured .game-card-image {
+  height: 100%;
+  min-height: 340px;
+}
+
+.game-card--featured .game-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 44px;
+}
+
+@media (max-width: 768px) {
+  .game-card--featured {
+    grid-template-columns: 1fr;
+  }
+
+  .game-card--featured .game-card-image {
+    min-height: 220px;
+  }
+
+  .game-card--featured .game-card-body {
+    padding: 28px;
+  }
 }
 
 .game-card {
@@ -390,14 +467,19 @@ section.tight {
   border-radius: var(--radius-sm);
   overflow: hidden;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .game-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: rgba(200, 169, 107, 0.4);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(200, 169, 107, 0.08);
 }
 
 .game-card-image {
+  position: relative;
   width: 100%;
   height: 220px;
   background: var(--surface-2);
@@ -409,15 +491,54 @@ section.tight {
   font-size: 14px;
 }
 
+/* Unifying overlay so bright and dark thumbnails read as one set. */
+.game-card-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 11, 18, 0.12) 0%, transparent 45%, rgba(8, 11, 18, 0.55) 100%);
+  pointer-events: none;
+}
+
 .game-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  filter: saturate(0.95) brightness(0.93);
+  transition: transform 0.4s ease, filter 0.4s ease;
 }
 
 .game-card:hover .game-card-image img {
   transform: scale(1.03);
+  filter: saturate(1) brightness(1);
+}
+
+/* Branded placeholder treatments for cards without a photo. */
+.game-card-image--brand-mmp {
+  background:
+    radial-gradient(circle at 25% 30%, rgba(110, 168, 255, 0.35), transparent 55%),
+    linear-gradient(135deg, #193D8F 0%, #0B1220 100%);
+}
+
+.game-card-image--brand-legnd {
+  background:
+    radial-gradient(circle at 75% 30%, rgba(200, 169, 107, 0.30), transparent 55%),
+    linear-gradient(135deg, #1A1F2E 0%, #0B1220 100%);
+}
+
+.game-card-image--brand-apps {
+  background:
+    radial-gradient(circle at 50% 30%, rgba(110, 168, 255, 0.22), transparent 60%),
+    linear-gradient(135deg, #111827 0%, #05070B 100%);
+}
+
+.card-image-label {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(245, 247, 250, 0.92);
+  text-transform: uppercase;
 }
 
 .game-card-body {
@@ -513,7 +634,7 @@ section.tight {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: var(--space-5);
   margin-bottom: var(--space-5);
 }
@@ -821,6 +942,14 @@ section.tight {
     grid-template-columns: 1fr;
   }
 
+  .hero-content h1 {
+    font-size: 50px;
+  }
+
+  .hero-logo {
+    max-width: 300px;
+  }
+
   section {
     padding: var(--space-7) 0;
   }
@@ -834,6 +963,13 @@ section.tight {
 
   .hero-content {
     padding: 120px 24px 80px;
+    flex-direction: column-reverse;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .hero-logo {
+    max-width: 220px;
   }
 
   .hero-content h1 {
@@ -890,4 +1026,101 @@ section.tight {
   .hero-content h1 {
     font-size: 32px;
   }
+}
+
+/* --- Accessibility utility --- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Contact section --- */
+.contact {
+  background: transparent;
+  border-top: 1px solid rgba(200, 169, 107, 0.16);
+}
+
+.contact-container {
+  max-width: 640px;
+}
+
+.contact-lead {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+  max-width: 560px;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form textarea {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #FFFFFF;
+  color: #0B1220;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.55;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+  color: #9AA1AD;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-color: rgba(110, 168, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.12);
+}
+
+.contact-submit {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+}
+
+.contact-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.contact-error {
+  display: none;
+  color: #FF6B6B;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.contact-success {
+  display: none;
+  padding: 18px 20px;
+  border-radius: var(--radius-sm);
+  background: rgba(47, 107, 255, 0.10);
+  border: 1px solid rgba(110, 168, 255, 0.25);
+  color: var(--text);
+  font-size: 15px;
 }
