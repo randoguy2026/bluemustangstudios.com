@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | Blue Mustang Studios</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="Blue Mustang Logo no words.png">
+  <link rel="stylesheet" href="styles.css?v=14">
+  <style>
+    .admin-page {
+      min-height: 100vh;
+      padding: 80px 24px 60px;
+    }
+    .admin-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      gap: 16px;
+    }
+    .admin-title {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 26px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    .admin-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .admin-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text-secondary);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+    }
+    .admin-btn:hover { color: var(--text); border-color: rgba(200,169,107,0.4); }
+
+    .login-card {
+      max-width: 420px;
+      margin: 80px auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .login-card h1 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .login-card p { color: var(--text-secondary); font-size: 14px; margin-bottom: 22px; }
+    .login-card input {
+      width: 100%; padding: 12px 14px; border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.15); background: #fff; color: #0B1220;
+      font-family: 'Inter', sans-serif; font-size: 15px; outline: none;
+    }
+    .login-card button {
+      width: 100%; margin-top: 14px; padding: 12px 14px; border-radius: 10px;
+      border: 1px solid rgba(110,168,255,0.35);
+      background: linear-gradient(180deg, rgba(47,107,255,0.25), rgba(17,24,39,0.9));
+      color: var(--text); font-weight: 500; cursor: pointer;
+    }
+    .login-error { color: #FF8585; font-size: 13px; margin-top: 12px; display: none; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+    }
+    .stat-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
+    }
+    .stat-value {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 38px; font-weight: 600; color: var(--text); line-height: 1;
+    }
+    .stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 22px;
+    }
+    .panel h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+    }
+    .panel table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .panel th, .panel td {
+      padding: 8px 6px; text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+    }
+    .panel th {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-muted); font-weight: 600;
+    }
+    .panel td.num { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+    .ref { color: var(--text-muted); }
+    .ua { color: var(--text-muted); font-size: 12px; max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pill {
+      display: inline-block; padding: 2px 8px; border-radius: 100px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      background: rgba(200,169,107,0.12); color: var(--gold);
+      border: 1px solid rgba(200,169,107,0.2); text-transform: uppercase;
+    }
+
+    .toggle-row { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 13px; }
+    .toggle-row input { width: 14px; height: 14px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="admin-page">
+    <div class="admin-container">
+
+      <!-- Login -->
+      <div id="login" class="login-card">
+        <h1>Admin Login</h1>
+        <p>Enter the admin password to view site analytics.</p>
+        <form id="login-form" autocomplete="off">
+          <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+          <button type="submit">Sign in</button>
+          <div class="login-error" id="login-error"></div>
+        </form>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboard" class="hidden">
+        <div class="admin-header">
+          <div class="admin-title">BMS Analytics</div>
+          <div class="admin-actions">
+            <label class="toggle-row">
+              <input type="checkbox" id="include-bots"> Include bots
+            </label>
+            <button class="admin-btn" id="refresh-btn">Refresh</button>
+            <button class="admin-btn" id="logout-btn">Sign out</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <div class="panel">
+          <h2>Top paths (last 30 days)</h2>
+          <table>
+            <thead><tr><th>Path</th><th class="num">Visits</th></tr></thead>
+            <tbody id="paths-body"></tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <h2>Recent visits</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>When</th><th>Path</th><th>Referrer</th><th>Visitor</th><th>UA</th>
+              </tr>
+            </thead>
+            <tbody id="recent-body"></tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center; color: var(--text-muted); font-size: 12px; margin-top: 24px;" id="footer-note"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const KEY = 'bms_admin_pw';
+    const elLogin = document.getElementById('login');
+    const elDash = document.getElementById('dashboard');
+    const elErr = document.getElementById('login-error');
+    const elPw = document.getElementById('password');
+    const includeBots = document.getElementById('include-bots');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    function fmtTime(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleString();
+    }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    async function fetchStats(password) {
+      const res = await fetch('/api/admin-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, includeBots: includeBots.checked }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const err = new Error(json.error || 'Request failed');
+        err.status = res.status;
+        throw err;
+      }
+      return json;
+    }
+
+    function renderStats(data) {
+      const grid = document.getElementById('stats-grid');
+      grid.innerHTML = '';
+      const cards = [
+        { label: 'Total visits', value: data.total, sub: data.includeBots ? 'all traffic' : 'humans only' },
+        { label: 'Today',         value: data.today, sub: data.uniqueToday + ' unique visitors' },
+        { label: 'Last 7 days',   value: data.last7, sub: data.uniqueLast7 + ' unique visitors' },
+        { label: 'Unique (30d)',  value: data.uniqueLast30, sub: 'distinct visitors' },
+      ];
+      for (const c of cards) {
+        const div = document.createElement('div');
+        div.className = 'stat';
+        div.innerHTML = '<div class="stat-label">' + esc(c.label) + '</div>'
+                      + '<div class="stat-value">' + (c.value ?? 0).toLocaleString() + '</div>'
+                      + '<div class="stat-sub">' + esc(c.sub) + '</div>';
+        grid.appendChild(div);
+      }
+
+      const pathsBody = document.getElementById('paths-body');
+      pathsBody.innerHTML = '';
+      for (const p of data.topPaths || []) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + esc(p.path) + '</td><td class="num">' + p.count + '</td>';
+        pathsBody.appendChild(tr);
+      }
+
+      const recentBody = document.getElementById('recent-body');
+      recentBody.innerHTML = '';
+      for (const r of data.recent || []) {
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + esc(fmtTime(r.ts)) + '</td>'
+          + '<td>' + esc(r.path) + (r.isBot ? ' <span class="pill">bot</span>' : '') + '</td>'
+          + '<td class="ref">' + esc(r.ref || '—') + '</td>'
+          + '<td><code>' + esc(r.ipHash || '—') + '</code></td>'
+          + '<td class="ua" title="' + esc(r.ua) + '">' + esc(r.ua) + '</td>';
+        recentBody.appendChild(tr);
+      }
+
+      document.getElementById('footer-note').textContent =
+        'Generated ' + fmtTime(data.generatedAt) + ' — IPs are hashed before storage.';
+    }
+
+    async function showDashboard(pw) {
+      try {
+        const data = await fetchStats(pw);
+        renderStats(data);
+        elLogin.classList.add('hidden');
+        elDash.classList.remove('hidden');
+      } catch (e) {
+        if (e.status === 401) {
+          elErr.textContent = 'Wrong password.';
+          elErr.style.display = 'block';
+          sessionStorage.removeItem(KEY);
+          elLogin.classList.remove('hidden');
+          elDash.classList.add('hidden');
+          elPw.focus();
+        } else {
+          elErr.textContent = e.message || 'Could not load stats.';
+          elErr.style.display = 'block';
+        }
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      elErr.style.display = 'none';
+      const pw = elPw.value;
+      sessionStorage.setItem(KEY, pw);
+      await showDashboard(pw);
+    });
+
+    refreshBtn.addEventListener('click', () => {
+      const pw = sessionStorage.getItem(KEY);
+      if (pw) showDashboard(pw);
+    });
+    includeBots.addEventListener('change', () => {
+      const pw = sessionStorage.getItem(KEY);
+      if (pw) showDashboard(pw);
+    });
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem(KEY);
+      elDash.classList.add('hidden');
+      elLogin.classList.remove('hidden');
+      elPw.value = '';
+      elPw.focus();
+    });
+
+    // Auto-restore session.
+    const saved = sessionStorage.getItem(KEY);
+    if (saved) showDashboard(saved);
+    else elPw.focus();
+  </script>
+</body>
+</html>

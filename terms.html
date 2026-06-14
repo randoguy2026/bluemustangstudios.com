@@ -121,5 +121,19 @@
     });
   </script>
 
+  <!-- Visit beacon -->
+  <script>
+    (function() {
+      try {
+        fetch('/api/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: location.pathname, ref: document.referrer || '' }),
+          keepalive: true,
+        }).catch(function(){});
+      } catch (e) {}
+    })();
+  </script>
+
 </body>
 </html>
