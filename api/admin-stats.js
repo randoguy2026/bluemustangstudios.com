@@ -1,4 +1,5 @@
 // Password-gated read endpoint. Returns aggregated visit stats from Firestore.
+// All Firestore queries are single-field so no composite indexes are needed.
 const admin = require("firebase-admin");
 const crypto = require("crypto");
 
@@ -57,39 +58,52 @@ module.exports = async function handler(req, res) {
     const sevenDaysAgo = new Date(now); sevenDaysAgo.setUTCDate(now.getUTCDate() - 7);
     const thirtyDaysAgo = new Date(now); thirtyDaysAgo.setUTCDate(now.getUTCDate() - 30);
 
-    const botFilter = (q) => (includeBots ? q : q.where("isBot", "==", false));
+    // Single-field WHERE — no composite index needed.
+    const last30Snap = await visits.where("ts", ">=", thirtyDaysAgo).get();
+    const last30 = last30Snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        path: data.path || "/",
+        ref: data.ref || "",
+        ua: data.ua || "",
+        ipHash: data.ipHash || "",
+        isBot: !!data.isBot,
+        tsDate: data.ts && data.ts.toDate ? data.ts.toDate() : null,
+      };
+    });
 
-    // Big totals via .count() — cheap aggregation queries.
-    const [totalSnap, todaySnap, last7Snap] = await Promise.all([
-      botFilter(visits).count().get(),
-      botFilter(visits.where("ts", ">=", startOfDay)).count().get(),
-      botFilter(visits.where("ts", ">=", sevenDaysAgo)).count().get(),
-    ]);
+    const filtered30 = includeBots ? last30 : last30.filter((d) => !d.isBot);
 
-    // For unique-visitor + by-path stats we need to scan a window.
-    const last30Snap = await botFilter(visits.where("ts", ">=", thirtyDaysAgo)).get();
+    const todayCount = filtered30.filter((d) => d.tsDate && d.tsDate >= startOfDay).length;
+    const last7Count = filtered30.filter((d) => d.tsDate && d.tsDate >= sevenDaysAgo).length;
+
     const uniqueToday = new Set();
     const uniqueLast7 = new Set();
     const uniqueLast30 = new Set();
     const pathCounts = {};
-    last30Snap.forEach((d) => {
-      const data = d.data();
-      const t = data.ts && data.ts.toDate ? data.ts.toDate() : null;
-      if (data.ipHash) {
-        uniqueLast30.add(data.ipHash);
-        if (t && t >= sevenDaysAgo) uniqueLast7.add(data.ipHash);
-        if (t && t >= startOfDay) uniqueToday.add(data.ipHash);
+    for (const d of filtered30) {
+      if (d.ipHash) {
+        uniqueLast30.add(d.ipHash);
+        if (d.tsDate && d.tsDate >= sevenDaysAgo) uniqueLast7.add(d.ipHash);
+        if (d.tsDate && d.tsDate >= startOfDay) uniqueToday.add(d.ipHash);
       }
-      if (data.path) pathCounts[data.path] = (pathCounts[data.path] || 0) + 1;
-    });
+      if (d.path) pathCounts[d.path] = (pathCounts[d.path] || 0) + 1;
+    }
     const topPaths = Object.entries(pathCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 12)
       .map(([path, count]) => ({ path, count }));
 
-    // Recent 25 visits.
-    const recentSnap = await botFilter(visits).orderBy("ts", "desc").limit(25).get();
-    const recent = recentSnap.docs.map((d) => {
+    // Total via single .count() — no composite index.
+    const totalSnap = includeBots
+      ? await visits.count().get()
+      : await visits.where("isBot", "==", false).count().get();
+    const total = totalSnap.data().count;
+
+    // Recent: orderBy only (no WHERE). Pull extra if we'll filter bots, then trim.
+    const recentLimit = includeBots ? 25 : 60;
+    const recentSnap = await visits.orderBy("ts", "desc").limit(recentLimit).get();
+    let recent = recentSnap.docs.map((d) => {
       const data = d.data();
       return {
         path: data.path || "/",
@@ -100,11 +114,13 @@ module.exports = async function handler(req, res) {
         ts: data.ts && data.ts.toDate ? data.ts.toDate().toISOString() : null,
       };
     });
+    if (!includeBots) recent = recent.filter((r) => !r.isBot);
+    recent = recent.slice(0, 25);
 
     return res.status(200).json({
-      total: totalSnap.data().count,
-      today: todaySnap.data().count,
-      last7: last7Snap.data().count,
+      total,
+      today: todayCount,
+      last7: last7Count,
       uniqueToday: uniqueToday.size,
       uniqueLast7: uniqueLast7.size,
       uniqueLast30: uniqueLast30.size,
@@ -115,6 +131,8 @@ module.exports = async function handler(req, res) {
     });
   } catch (err) {
     console.error("admin-stats error:", err);
-    return res.status(500).json({ error: "Something went wrong." });
+    // Surface the underlying message so we can diagnose from the UI.
+    const msg = (err && (err.message || String(err))) || "unknown";
+    return res.status(500).json({ error: "Stats error: " + String(msg).slice(0, 500) });
   }
 };
