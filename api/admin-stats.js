@@ -98,7 +98,10 @@ async function getAstelos() {
 // ── MarketHop: secret-gated /api/stats ──────────────────────────────
 async function getMarketHop() {
   const secret = process.env.STATS_SECRET;
-  const url = process.env.MARKETHOP_STATS_URL || "https://markethop.io/api/stats";
+  // Use the canonical www host directly: apex markethop.io 308-redirects to
+  // www, and Node fetch strips the Authorization header on cross-origin
+  // redirects, which would make the call look unauthenticated.
+  const url = process.env.MARKETHOP_STATS_URL || "https://www.markethop.io/api/stats";
   if (!secret) return { ok: false, error: "STATS_SECRET not set" };
   try {
     const d = await fetchJson(url, { headers: { authorization: `Bearer ${secret}` } });
