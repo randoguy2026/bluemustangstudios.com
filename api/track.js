@@ -1,29 +1,8 @@
-// Visit beacon: each public-page load POSTs here. Writes one Firestore doc.
-// Fail-quiet so analytics issues never break the site.
-const admin = require("firebase-admin");
+// Visit beacon: each public-page load POSTs here. Writes one Postgres row.
+// Accepts a `site` tag so other BMS properties (e.g. mymoveprep) can report
+// into the same table cross-origin. Fail-quiet so analytics never break a site.
 const crypto = require("crypto");
-
-function formatPrivateKey(key) {
-  key = key.replace(/^["']|["']$/g, "");
-  return key.replace(/\\n/g, "\n");
-}
-
-let db;
-function getFirestore() {
-  if (!db) {
-    if (!admin.apps.length) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY || ""),
-        }),
-      });
-    }
-    db = admin.firestore();
-  }
-  return db;
-}
+const { getDb, ensureSchema, schema } = require("../db");
 
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -33,7 +12,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(204).end();
 
   try {
-    const { path = "/", ref = "" } = req.body || {};
+    const { path = "/", ref = "", site = "bluemustangstudios" } = req.body || {};
     const fwd = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
     const ip = fwd || (req.socket && req.socket.remoteAddress) || "";
     const ua = String(req.headers["user-agent"] || "").slice(0, 300);
@@ -41,17 +20,16 @@ module.exports = async function handler(req, res) {
     const ipHash = ip
       ? crypto.createHash("sha256").update(ip + salt).digest("hex").slice(0, 16)
       : "";
-
-    // Skip obvious bots from the count by a simple UA test.
     const isBot = /bot|crawler|spider|preview|facebook|whatsapp|slackbot|discord|telegram|skype/i.test(ua);
 
-    await getFirestore().collection("visits").add({
+    await ensureSchema();
+    await getDb().insert(schema.visits).values({
+      site: String(site).slice(0, 60),
       path: String(path).slice(0, 200),
       ref: String(ref).slice(0, 300),
       ua,
       ipHash,
       isBot,
-      ts: admin.firestore.FieldValue.serverTimestamp(),
     });
     return res.status(204).end();
   } catch (err) {

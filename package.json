@@ -2,7 +2,8 @@
   "name": "bluemustangstudios.com",
   "private": true,
   "dependencies": {
-    "firebase-admin": "^13.0.0",
+    "drizzle-orm": "^0.36.4",
+    "postgres": "^3.4.5",
     "resend": "^4.0.0"
   }
 }

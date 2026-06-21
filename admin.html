@@ -101,6 +101,59 @@
     }
     .stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
 
+    .section-label-row {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--gold);
+      margin: 8px 0 16px; padding-top: 8px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .product-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-box::before {
+      content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--gold));
+      opacity: 0.7;
+    }
+    .product-name {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 18px; color: var(--text); margin-bottom: 2px; letter-spacing: 0.04em;
+    }
+    .product-tag {
+      font-size: 11px; color: var(--text-muted); margin-bottom: 18px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .product-metric { margin-bottom: 12px; }
+    .product-metric:last-child { margin-bottom: 0; }
+    .product-metric .pm-value {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 32px; font-weight: 600; color: var(--text); line-height: 1;
+    }
+    .product-metric .pm-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-muted); margin-top: 6px;
+    }
+    .product-sub { display: flex; gap: 18px; margin-top: 14px; }
+    .product-sub div { font-size: 12px; color: var(--text-secondary); }
+    .product-sub b { color: var(--text); font-variant-numeric: tabular-nums; }
+    .product-error {
+      font-size: 12px; color: #FF8585; margin-top: 8px;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 8px; padding: 8px 10px;
+    }
+
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -167,6 +220,10 @@
           </div>
         </div>
 
+        <h2 class="section-label-row">Products</h2>
+        <div class="product-grid" id="product-grid"></div>
+
+        <h2 class="section-label-row">Blue Mustang Studios &mdash; site visits</h2>
         <div class="stats-grid" id="stats-grid"></div>
 
         <div class="panel">
@@ -227,7 +284,55 @@
       return json;
     }
 
+    function num(n) { return (Number(n) || 0).toLocaleString(); }
+
+    function productBox(name, tag, inner, err) {
+      return '<div class="product-box">'
+        + '<div class="product-name">' + esc(name) + '</div>'
+        + '<div class="product-tag">' + esc(tag) + '</div>'
+        + (err
+            ? '<div class="product-metric"><div class="pm-value">&mdash;</div><div class="pm-label">No data</div></div>'
+              + '<div class="product-error">' + esc(err) + '</div>'
+            : inner)
+        + '</div>';
+    }
+
+    function renderProducts(p) {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+      p = p || {};
+      const boxes = [];
+
+      // Astelos
+      const a = p.astelos || {};
+      boxes.push(productBox('Astelos', 'astelos.io',
+        '<div class="product-metric"><div class="pm-value">' + num(a.signups) + '</div>'
+        + '<div class="pm-label">Signups</div></div>'
+        + '<div class="product-sub"><div>Waitlist <b>' + num(a.waitlist) + '</b></div></div>',
+        a.ok ? null : (a.error || 'unavailable')));
+
+      // MarketHop
+      const m = p.markethop || {};
+      boxes.push(productBox('MarketHop', 'markethop.io',
+        '<div class="product-metric"><div class="pm-value">' + num(m.markets) + '</div>'
+        + '<div class="pm-label">Markets</div></div>'
+        + '<div class="product-sub"><div>Organizers <b>' + num(m.organizers) + '</b></div>'
+        + '<div>Open <b>' + num(m.openMarkets) + '</b></div></div>',
+        m.ok ? null : (m.error || 'unavailable')));
+
+      // mymoveprep (PostHog)
+      const mp = p.mymoveprep || {};
+      boxes.push(productBox('My Move Prep', 'mymoveprep.com',
+        '<div class="product-metric"><div class="pm-value">' + num(mp.uniqueAllTime) + '</div>'
+        + '<div class="pm-label">Unique visitors</div></div>'
+        + '<div class="product-sub"><div>Last 30d <b>' + num(mp.uniqueLast30) + '</b></div></div>',
+        mp.ok ? null : (mp.error || 'unavailable')));
+
+      grid.innerHTML = boxes.join('');
+    }
+
     function renderStats(data) {
+      renderProducts(data.products);
       const grid = document.getElementById('stats-grid');
       grid.innerHTML = '';
       const cards = [
