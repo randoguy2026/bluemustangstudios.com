@@ -149,7 +149,14 @@ async function getMyMovePrep() {
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // Only the site's own pages may call this (it was "*" until 2026-10-22, a
+  // Posture finding): echo the origin back only when it is one of ours.
+  const ALLOWED_ORIGINS = ["https://www.bluemustangstudios.com", "https://bluemustangstudios.com"];
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  }
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(200).end();
